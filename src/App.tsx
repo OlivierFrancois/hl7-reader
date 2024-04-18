@@ -1,14 +1,30 @@
-import { useState } from 'react'
+import List from "./components/File/List.tsx";
+import Body from "./components/Body.tsx";
+import React, {createContext, useState} from "react";
+import MessageHL7 from "./interfaces/MessageHL7.tsx";
+
+interface MessageContextI {
+    messages: MessageHL7[],
+    setMessages: React.Dispatch<React.SetStateAction<MessageHL7[]>>
+}
+
+export const MessageContext = createContext<MessageContextI>({} as MessageContextI);
 
 function App() {
+    const messagesLocalStorage: MessageHL7[] | null = localStorage.getItem('hl7_reader')
+        ? JSON.parse(localStorage.getItem('hl7_reader') as string)
+        : null;
 
-  return (
-    <div className="flex flex-col">
-        <div className="p-4 rounded bg-cyan-500 w-32">Hello world</div>
+    const [messages, setMessages] = useState<MessageHL7[]>(messagesLocalStorage ? messagesLocalStorage : []);
+    const messageContext = {messages, setMessages};
 
-        <input type="text" className="input" />
-    </div>
-  )
+    return (
+        <MessageContext.Provider value={messageContext}>
+            <List/>
+
+            <Body/>
+        </MessageContext.Provider>
+    )
 }
 
 export default App
