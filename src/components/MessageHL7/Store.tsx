@@ -1,9 +1,9 @@
 import {useContext, useState} from "react";
-import {MessageContext} from "../../App.tsx";
+import {AppContext} from "../../App.tsx";
 import MessageHL7 from "../../interfaces/MessageHL7.tsx";
 
 export default function Store({size}: {size: string}) {
-    const {messages, setMessages} = useContext(MessageContext)
+    const {messages, setMessages} = useContext(AppContext)
 
     const [messageContent, setMessageContent] = useState<string>('');
     const [filename, setFilename] = useState<string>('')
