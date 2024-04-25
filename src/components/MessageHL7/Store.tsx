@@ -9,8 +9,13 @@ export default function Store({size}: {size: string}) {
     const [filename, setFilename] = useState<string>('')
 
     const saveMessage = () => {
+        let messageType = '';
+        if (messageContent) {
+            const msh = messageContent.split('\n')[0];
+            messageType = msh?.split('|')[8];
+        }
         const newMessage: MessageHL7 = {
-            filename: filename,
+            filename: `${filename} - ${messageType}`,
             content: messageContent,
         };
         const messagesTmp = [...messages, newMessage]
