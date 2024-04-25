@@ -18,7 +18,9 @@ export default function PrettyDisplay({message}: Props) {
     return <div ref={componentContainerRef} className="p-3 flex flex-col gap-4 max-w-full">
         <div className="text-bold text-lg">{message.filename}</div>
 
-        <div className={'text-xs h-20 max-w-full overflow-y-scroll border rounded p-2'}>{message.content}</div>
+        <div className={'text-xs h-20 max-w-full overflow-y-scroll border rounded p-2'} dangerouslySetInnerHTML={{
+            __html: message.content.replaceAll('\n', '<br>')
+        }}></div>
 
         <div className="border max-w-full">
             <table className={'table table-xs max-w-full'}>
