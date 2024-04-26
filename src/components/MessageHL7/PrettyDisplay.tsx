@@ -1,13 +1,14 @@
 import MessageHL7 from "../../interfaces/MessageHL7.tsx";
 import React, {useContext} from "react";
 import {AppContext} from "../../App.tsx";
+import {HL7API} from "../../api/HL7API.tsx";
 
 interface Props {
     message: MessageHL7
 }
 
 export default function PrettyDisplay({message}: Props) {
-    const {commonSegmentsAndFields} = useContext(AppContext);
+    const {commonSegmentsAndFields, apiKey, apiUrl} = useContext(AppContext);
 
     const componentContainerRef = React.createRef<HTMLDivElement>();
     const scrollToClick = (e: React.MouseEvent) => {
@@ -15,8 +16,22 @@ export default function PrettyDisplay({message}: Props) {
         return
     }
 
+    const sendMessage = () => {
+        HL7API.sendMessage({
+            url: apiUrl,
+            key: apiKey,
+            hl7_content: atob(btoa(message.content)),
+        })
+            .then(response => {
+                console.log(response);
+            })
+    }
+
     return <div ref={componentContainerRef} className="p-3 flex flex-col gap-4 max-w-full">
-        <div className="text-bold text-lg">{message.filename}</div>
+        <div className="flex justify-between items-center">
+            <div className="text-bold text-lg">{message.filename}</div>
+            <div onClick={sendMessage} className="btn btn-sm btn-primary">Envoyer</div>
+        </div>
 
         <div className={'text-xs h-20 max-w-full overflow-y-scroll border rounded p-2'} dangerouslySetInnerHTML={{
             __html: message.content.replaceAll('\n', '<br>')
@@ -32,9 +47,9 @@ export default function PrettyDisplay({message}: Props) {
                 </thead>
 
                 <tbody>
-                    {commonSegmentsAndFields.map(segment => {
+                    {commonSegmentsAndFields.map((segment, keySegment) => {
                         const segmentStr = message.content.split('\n').find((f) => f.slice(0, 3) === segment.nom)
-                        return <>
+                        return <React.Fragment key={keySegment}>
                             <tr onClick={scrollToClick} className={'font-semibold bg-slate-200'}>
                                 <td colSpan={2}>{segment.nom}</td>
                             </tr>
@@ -48,11 +63,10 @@ export default function PrettyDisplay({message}: Props) {
                                     </td>
                                 </tr>
                             })}
-                        </>
+                        </React.Fragment>
                     })}
                 </tbody>
             </table>
         </div>
-
     </div>
 }

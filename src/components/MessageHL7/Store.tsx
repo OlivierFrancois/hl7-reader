@@ -15,13 +15,13 @@ export default function Store({size}: {size: string}) {
             messageType = msh?.split('|')[8];
         }
         const newMessage: MessageHL7 = {
-            filename: `${filename} - ${messageType}`,
+            filename: filename ? `${filename} - ${messageType}` : messageType,
             content: messageContent,
         };
         const messagesTmp = [...messages, newMessage]
         setMessages(messagesTmp);
-
-        localStorage.setItem('hl7_reader', JSON.stringify(messagesTmp));
+        setFilename('');
+        setMessageContent('');
     }
 
     return <div className="flex flex-col gap-2 text-neutral">

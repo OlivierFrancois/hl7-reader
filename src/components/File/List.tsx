@@ -1,10 +1,13 @@
 import Store from "../MessageHL7/Store.tsx";
 import {AppContext} from "../../App.tsx";
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import MessageHL7 from "../../interfaces/MessageHL7.tsx";
 
 export default function List() {
-    const {messages, setMessages} = useContext(AppContext);
+    const {messages, setMessages, apiUrl, apiKey, setApiKey, setApiUrl} = useContext(AppContext);
+
+    const [apiUrlInput, setApiUrlInput] = useState<string>('')
+    const [apiKeyInput, setApiKeyInput] = useState<string>('')
 
     const removeMessage = (message: MessageHL7) => {
         const index = messages.indexOf(message);
@@ -13,19 +16,48 @@ export default function List() {
             setMessages(updatedMessages);
             localStorage.setItem('hl7_reader', JSON.stringify(updatedMessages));
         }
-
     }
 
-    return <div className={'h-full w-72 bg-slate-600 text-slate-50 border-r shadow flex flex-col gap-5 p-4'}>
+    const saveDateAPI = () => {
+        setApiUrl(apiUrlInput);
+        setApiKey(apiKeyInput);
+        setApiUrlInput('');
+        setApiKeyInput('');
+    }
 
-        <div className="font-medium">Importer un message</div>
+    return <div className={'h-full w-72 bg-slate-600 text-slate-50 border-r shadow flex flex-col gap-8 p-4'}>
+        <div className="flex flex-col gap-3">
+            <div className="font-medium">Envoyer un message</div>
 
-        <Store size={'sm'}/>
+            <div className={'flex flex-col gap-1 text-black'}>
+                <input type="text"
+                       onChange={e => setApiUrlInput(e.target.value)}
+                       placeholder={apiUrl !== '' ? apiUrl : 'API URL'}
+                       value={apiUrlInput}
+                       className="input input-bordered input-sm w-full"/>
+                <input type="text"
+                       onChange={e => setApiKeyInput(e.target.value)}
+                       placeholder={apiKey !== '' ? apiKey : 'API key'}
+                       value={apiKeyInput}
+                       className="input input-bordered input-sm w-full"/>
+            </div>
+
+            <button onClick={saveDateAPI} className={`btn btn-neutral btn-sm`}>Enregistrer</button>
+        </div>
+
+        <hr/>
+
+        <div className="flex flex-col gap-3">
+            <div className="font-medium">Importer un message</div>
+
+            <Store size={'sm'}/>
+        </div>
 
         <hr/>
 
         <div className="flex flex-col gap-1">
-            {messages.map((message, k) => <div key={k} className={'border border-slate-700 bg-slate-500 rounded py-1 px-3 flex justify-between items-center'}>
+            {messages.map((message, k) => <div key={k}
+                                               className={'border border-slate-700 bg-slate-500 rounded py-1 px-3 flex justify-between items-center'}>
                 <div>{message.filename}</div>
 
                 <div className={'btn btn-ghost btn-xs'} onClick={() => removeMessage(message)}>X</div>
