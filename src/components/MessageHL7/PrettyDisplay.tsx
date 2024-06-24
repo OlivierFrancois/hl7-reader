@@ -1,14 +1,13 @@
 import MessageHL7 from "../../interfaces/MessageHL7.tsx";
 import React, {useContext} from "react";
 import {AppContext} from "../../App.tsx";
-import {HL7API} from "../../api/HL7API.tsx";
 
 interface Props {
     message: MessageHL7
 }
 
 export default function PrettyDisplay({message}: Props) {
-    const {commonSegmentsAndFields, apiKey, apiUrl} = useContext(AppContext);
+    const {commonSegmentsAndFields} = useContext(AppContext);
 
     const componentContainerRef = React.createRef<HTMLDivElement>();
     const scrollToClick = (e: React.MouseEvent) => {
@@ -16,21 +15,9 @@ export default function PrettyDisplay({message}: Props) {
         return
     }
 
-    const sendMessage = () => {
-        HL7API.sendMessage({
-            url: apiUrl,
-            key: apiKey,
-            hl7_content: atob(btoa(message.content)),
-        })
-            .then(response => {
-                console.log(response);
-            })
-    }
-
     return <div ref={componentContainerRef} className="p-3 flex flex-col gap-4 max-w-full">
         <div className="flex justify-between items-center">
             <div className="text-bold text-lg">{message.filename}</div>
-            <div onClick={sendMessage} className="btn btn-sm btn-primary">Envoyer</div>
         </div>
 
         <div className={'text-xs h-20 max-w-full overflow-y-scroll border rounded p-2'} dangerouslySetInnerHTML={{
